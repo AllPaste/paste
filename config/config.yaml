@@ -1,0 +1,5 @@
+DB:
+  Diver: sqlite
+  DSN: "sqlite.db"
+Log:
+  Level: "info"
