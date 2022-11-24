@@ -22,9 +22,9 @@ func main() {
 	c := config.NewConfig(stringFlag)
 	fmt.Printf("%#v\n", c)
 
-	logger := log.New(os.Stdin, log.InfoLevel)
-	log.ResetDefault(logger)
+	logger := log.New(os.Stderr, log.InfoLevel)
 	defer log.Sync()
-	log.Info("hello")
-	log.Error("ERROR")
+
+	logger.Infof("config: %#v", c)
+	logger.Error("ERROR")
 }
