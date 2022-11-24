@@ -83,8 +83,8 @@ func (pq *PasteQuery) FirstX(ctx context.Context) *Paste {
 
 // FirstID returns the first Paste ID from the query.
 // Returns a *NotFoundError when no Paste ID was found.
-func (pq *PasteQuery) FirstID(ctx context.Context) (id int, err error) {
-	var ids []int
+func (pq *PasteQuery) FirstID(ctx context.Context) (id int64, err error) {
+	var ids []int64
 	if ids, err = pq.Limit(1).IDs(ctx); err != nil {
 		return
 	}
@@ -96,7 +96,7 @@ func (pq *PasteQuery) FirstID(ctx context.Context) (id int, err error) {
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (pq *PasteQuery) FirstIDX(ctx context.Context) int {
+func (pq *PasteQuery) FirstIDX(ctx context.Context) int64 {
 	id, err := pq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -134,8 +134,8 @@ func (pq *PasteQuery) OnlyX(ctx context.Context) *Paste {
 // OnlyID is like Only, but returns the only Paste ID in the query.
 // Returns a *NotSingularError when more than one Paste ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (pq *PasteQuery) OnlyID(ctx context.Context) (id int, err error) {
-	var ids []int
+func (pq *PasteQuery) OnlyID(ctx context.Context) (id int64, err error) {
+	var ids []int64
 	if ids, err = pq.Limit(2).IDs(ctx); err != nil {
 		return
 	}
@@ -151,7 +151,7 @@ func (pq *PasteQuery) OnlyID(ctx context.Context) (id int, err error) {
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (pq *PasteQuery) OnlyIDX(ctx context.Context) int {
+func (pq *PasteQuery) OnlyIDX(ctx context.Context) int64 {
 	id, err := pq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -177,8 +177,8 @@ func (pq *PasteQuery) AllX(ctx context.Context) []*Paste {
 }
 
 // IDs executes the query and returns a list of Paste IDs.
-func (pq *PasteQuery) IDs(ctx context.Context) ([]int, error) {
-	var ids []int
+func (pq *PasteQuery) IDs(ctx context.Context) ([]int64, error) {
+	var ids []int64
 	if err := pq.Select(paste.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -186,7 +186,7 @@ func (pq *PasteQuery) IDs(ctx context.Context) ([]int, error) {
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (pq *PasteQuery) IDsX(ctx context.Context) []int {
+func (pq *PasteQuery) IDsX(ctx context.Context) []int64 {
 	ids, err := pq.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -253,12 +253,12 @@ func (pq *PasteQuery) Clone() *PasteQuery {
 // Example:
 //
 //	var v []struct {
-//		Content string `json:"content,omitempty"`
+//		CreatedAt int64 `json:"created_at,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
 //	client.Paste.Query().
-//		GroupBy(paste.FieldContent).
+//		GroupBy(paste.FieldCreatedAt).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 //
@@ -282,11 +282,11 @@ func (pq *PasteQuery) GroupBy(field string, fields ...string) *PasteGroupBy {
 // Example:
 //
 //	var v []struct {
-//		Content string `json:"content,omitempty"`
+//		CreatedAt int64 `json:"created_at,omitempty"`
 //	}
 //
 //	client.Paste.Query().
-//		Select(paste.FieldContent).
+//		Select(paste.FieldCreatedAt).
 //		Scan(ctx, &v)
 //
 func (pq *PasteQuery) Select(fields ...string) *PasteSelect {
@@ -369,7 +369,7 @@ func (pq *PasteQuery) querySpec() *sqlgraph.QuerySpec {
 			Table:   paste.Table,
 			Columns: paste.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeInt64,
 				Column: paste.FieldID,
 			},
 		},

@@ -2,8 +2,28 @@
 
 package ent
 
+import (
+	"github.com/AllPaste/paste/internal/data/ent/paste"
+	"github.com/AllPaste/paste/internal/data/ent/schema"
+)
+
 // The init function reads all schema descriptors with runtime code
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
+	pasteMixin := schema.Paste{}.Mixin()
+	pasteMixinFields0 := pasteMixin[0].Fields()
+	_ = pasteMixinFields0
+	pasteFields := schema.Paste{}.Fields()
+	_ = pasteFields
+	// pasteDescCreatedAt is the schema descriptor for created_at field.
+	pasteDescCreatedAt := pasteMixinFields0[1].Descriptor()
+	// paste.DefaultCreatedAt holds the default value on creation for the created_at field.
+	paste.DefaultCreatedAt = pasteDescCreatedAt.Default.(func() int64)
+	// pasteDescUpdatedAt is the schema descriptor for updated_at field.
+	pasteDescUpdatedAt := pasteMixinFields0[2].Descriptor()
+	// paste.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	paste.DefaultUpdatedAt = pasteDescUpdatedAt.Default.(func() int64)
+	// paste.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	paste.UpdateDefaultUpdatedAt = pasteDescUpdatedAt.UpdateDefault.(func() int64)
 }

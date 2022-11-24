@@ -14,7 +14,11 @@ import (
 type Paste struct {
 	config `json:"-"`
 	// ID of the ent.
-	ID int `json:"id,omitempty"`
+	ID int64 `json:"id,omitempty"`
+	// 创建时间
+	CreatedAt int64 `json:"created_at,omitempty"`
+	// 更新时间
+	UpdatedAt int64 `json:"updated_at,omitempty"`
 	// 剪切板内容
 	Content string `json:"content,omitempty"`
 	// 创建人(所属者)
@@ -26,7 +30,7 @@ func (*Paste) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case paste.FieldID:
+		case paste.FieldID, paste.FieldCreatedAt, paste.FieldUpdatedAt:
 			values[i] = new(sql.NullInt64)
 		case paste.FieldContent, paste.FieldCreator:
 			values[i] = new(sql.NullString)
@@ -50,7 +54,19 @@ func (pa *Paste) assignValues(columns []string, values []any) error {
 			if !ok {
 				return fmt.Errorf("unexpected type %T for field id", value)
 			}
-			pa.ID = int(value.Int64)
+			pa.ID = int64(value.Int64)
+		case paste.FieldCreatedAt:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field created_at", values[i])
+			} else if value.Valid {
+				pa.CreatedAt = value.Int64
+			}
+		case paste.FieldUpdatedAt:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field updated_at", values[i])
+			} else if value.Valid {
+				pa.UpdatedAt = value.Int64
+			}
 		case paste.FieldContent:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field content", values[i])
@@ -91,6 +107,12 @@ func (pa *Paste) String() string {
 	var builder strings.Builder
 	builder.WriteString("Paste(")
 	builder.WriteString(fmt.Sprintf("id=%v, ", pa.ID))
+	builder.WriteString("created_at=")
+	builder.WriteString(fmt.Sprintf("%v", pa.CreatedAt))
+	builder.WriteString(", ")
+	builder.WriteString("updated_at=")
+	builder.WriteString(fmt.Sprintf("%v", pa.UpdatedAt))
+	builder.WriteString(", ")
 	builder.WriteString("content=")
 	builder.WriteString(pa.Content)
 	builder.WriteString(", ")

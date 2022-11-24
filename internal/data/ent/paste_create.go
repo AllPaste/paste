@@ -19,6 +19,34 @@ type PasteCreate struct {
 	hooks    []Hook
 }
 
+// SetCreatedAt sets the "created_at" field.
+func (pc *PasteCreate) SetCreatedAt(i int64) *PasteCreate {
+	pc.mutation.SetCreatedAt(i)
+	return pc
+}
+
+// SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
+func (pc *PasteCreate) SetNillableCreatedAt(i *int64) *PasteCreate {
+	if i != nil {
+		pc.SetCreatedAt(*i)
+	}
+	return pc
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (pc *PasteCreate) SetUpdatedAt(i int64) *PasteCreate {
+	pc.mutation.SetUpdatedAt(i)
+	return pc
+}
+
+// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
+func (pc *PasteCreate) SetNillableUpdatedAt(i *int64) *PasteCreate {
+	if i != nil {
+		pc.SetUpdatedAt(*i)
+	}
+	return pc
+}
+
 // SetContent sets the "content" field.
 func (pc *PasteCreate) SetContent(s string) *PasteCreate {
 	pc.mutation.SetContent(s)
@@ -28,6 +56,12 @@ func (pc *PasteCreate) SetContent(s string) *PasteCreate {
 // SetCreator sets the "creator" field.
 func (pc *PasteCreate) SetCreator(s string) *PasteCreate {
 	pc.mutation.SetCreator(s)
+	return pc
+}
+
+// SetID sets the "id" field.
+func (pc *PasteCreate) SetID(i int64) *PasteCreate {
+	pc.mutation.SetID(i)
 	return pc
 }
 
@@ -42,6 +76,7 @@ func (pc *PasteCreate) Save(ctx context.Context) (*Paste, error) {
 		err  error
 		node *Paste
 	)
+	pc.defaults()
 	if len(pc.hooks) == 0 {
 		if err = pc.check(); err != nil {
 			return nil, err
@@ -105,8 +140,26 @@ func (pc *PasteCreate) ExecX(ctx context.Context) {
 	}
 }
 
+// defaults sets the default values of the builder before save.
+func (pc *PasteCreate) defaults() {
+	if _, ok := pc.mutation.CreatedAt(); !ok {
+		v := paste.DefaultCreatedAt()
+		pc.mutation.SetCreatedAt(v)
+	}
+	if _, ok := pc.mutation.UpdatedAt(); !ok {
+		v := paste.DefaultUpdatedAt()
+		pc.mutation.SetUpdatedAt(v)
+	}
+}
+
 // check runs all checks and user-defined validators on the builder.
 func (pc *PasteCreate) check() error {
+	if _, ok := pc.mutation.CreatedAt(); !ok {
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "Paste.created_at"`)}
+	}
+	if _, ok := pc.mutation.UpdatedAt(); !ok {
+		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "Paste.updated_at"`)}
+	}
 	if _, ok := pc.mutation.Content(); !ok {
 		return &ValidationError{Name: "content", err: errors.New(`ent: missing required field "Paste.content"`)}
 	}
@@ -124,8 +177,10 @@ func (pc *PasteCreate) sqlSave(ctx context.Context) (*Paste, error) {
 		}
 		return nil, err
 	}
-	id := _spec.ID.Value.(int64)
-	_node.ID = int(id)
+	if _spec.ID.Value != _node.ID {
+		id := _spec.ID.Value.(int64)
+		_node.ID = int64(id)
+	}
 	return _node, nil
 }
 
@@ -135,11 +190,23 @@ func (pc *PasteCreate) createSpec() (*Paste, *sqlgraph.CreateSpec) {
 		_spec = &sqlgraph.CreateSpec{
 			Table: paste.Table,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeInt64,
 				Column: paste.FieldID,
 			},
 		}
 	)
+	if id, ok := pc.mutation.ID(); ok {
+		_node.ID = id
+		_spec.ID.Value = id
+	}
+	if value, ok := pc.mutation.CreatedAt(); ok {
+		_spec.SetField(paste.FieldCreatedAt, field.TypeInt64, value)
+		_node.CreatedAt = value
+	}
+	if value, ok := pc.mutation.UpdatedAt(); ok {
+		_spec.SetField(paste.FieldUpdatedAt, field.TypeInt64, value)
+		_node.UpdatedAt = value
+	}
 	if value, ok := pc.mutation.Content(); ok {
 		_spec.SetField(paste.FieldContent, field.TypeString, value)
 		_node.Content = value
@@ -165,6 +232,7 @@ func (pcb *PasteCreateBulk) Save(ctx context.Context) ([]*Paste, error) {
 	for i := range pcb.builders {
 		func(i int, root context.Context) {
 			builder := pcb.builders[i]
+			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*PasteMutation)
 				if !ok {
@@ -191,9 +259,9 @@ func (pcb *PasteCreateBulk) Save(ctx context.Context) ([]*Paste, error) {
 					return nil, err
 				}
 				mutation.id = &nodes[i].ID
-				if specs[i].ID.Value != nil {
+				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
 					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = int(id)
+					nodes[i].ID = int64(id)
 				}
 				mutation.done = true
 				return nodes[i], nil

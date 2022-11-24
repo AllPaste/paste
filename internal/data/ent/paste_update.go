@@ -27,6 +27,19 @@ func (pu *PasteUpdate) Where(ps ...predicate.Paste) *PasteUpdate {
 	return pu
 }
 
+// SetUpdatedAt sets the "updated_at" field.
+func (pu *PasteUpdate) SetUpdatedAt(i int64) *PasteUpdate {
+	pu.mutation.ResetUpdatedAt()
+	pu.mutation.SetUpdatedAt(i)
+	return pu
+}
+
+// AddUpdatedAt adds i to the "updated_at" field.
+func (pu *PasteUpdate) AddUpdatedAt(i int64) *PasteUpdate {
+	pu.mutation.AddUpdatedAt(i)
+	return pu
+}
+
 // SetContent sets the "content" field.
 func (pu *PasteUpdate) SetContent(s string) *PasteUpdate {
 	pu.mutation.SetContent(s)
@@ -50,6 +63,7 @@ func (pu *PasteUpdate) Save(ctx context.Context) (int, error) {
 		err      error
 		affected int
 	)
+	pu.defaults()
 	if len(pu.hooks) == 0 {
 		affected, err = pu.sqlSave(ctx)
 	} else {
@@ -98,13 +112,21 @@ func (pu *PasteUpdate) ExecX(ctx context.Context) {
 	}
 }
 
+// defaults sets the default values of the builder before save.
+func (pu *PasteUpdate) defaults() {
+	if _, ok := pu.mutation.UpdatedAt(); !ok {
+		v := paste.UpdateDefaultUpdatedAt()
+		pu.mutation.SetUpdatedAt(v)
+	}
+}
+
 func (pu *PasteUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
 			Table:   paste.Table,
 			Columns: paste.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeInt64,
 				Column: paste.FieldID,
 			},
 		},
@@ -115,6 +137,12 @@ func (pu *PasteUpdate) sqlSave(ctx context.Context) (n int, err error) {
 				ps[i](selector)
 			}
 		}
+	}
+	if value, ok := pu.mutation.UpdatedAt(); ok {
+		_spec.SetField(paste.FieldUpdatedAt, field.TypeInt64, value)
+	}
+	if value, ok := pu.mutation.AddedUpdatedAt(); ok {
+		_spec.AddField(paste.FieldUpdatedAt, field.TypeInt64, value)
 	}
 	if value, ok := pu.mutation.Content(); ok {
 		_spec.SetField(paste.FieldContent, field.TypeString, value)
@@ -139,6 +167,19 @@ type PasteUpdateOne struct {
 	fields   []string
 	hooks    []Hook
 	mutation *PasteMutation
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (puo *PasteUpdateOne) SetUpdatedAt(i int64) *PasteUpdateOne {
+	puo.mutation.ResetUpdatedAt()
+	puo.mutation.SetUpdatedAt(i)
+	return puo
+}
+
+// AddUpdatedAt adds i to the "updated_at" field.
+func (puo *PasteUpdateOne) AddUpdatedAt(i int64) *PasteUpdateOne {
+	puo.mutation.AddUpdatedAt(i)
+	return puo
 }
 
 // SetContent sets the "content" field.
@@ -171,6 +212,7 @@ func (puo *PasteUpdateOne) Save(ctx context.Context) (*Paste, error) {
 		err  error
 		node *Paste
 	)
+	puo.defaults()
 	if len(puo.hooks) == 0 {
 		node, err = puo.sqlSave(ctx)
 	} else {
@@ -225,13 +267,21 @@ func (puo *PasteUpdateOne) ExecX(ctx context.Context) {
 	}
 }
 
+// defaults sets the default values of the builder before save.
+func (puo *PasteUpdateOne) defaults() {
+	if _, ok := puo.mutation.UpdatedAt(); !ok {
+		v := paste.UpdateDefaultUpdatedAt()
+		puo.mutation.SetUpdatedAt(v)
+	}
+}
+
 func (puo *PasteUpdateOne) sqlSave(ctx context.Context) (_node *Paste, err error) {
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
 			Table:   paste.Table,
 			Columns: paste.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeInt64,
 				Column: paste.FieldID,
 			},
 		},
@@ -259,6 +309,12 @@ func (puo *PasteUpdateOne) sqlSave(ctx context.Context) (_node *Paste, err error
 				ps[i](selector)
 			}
 		}
+	}
+	if value, ok := puo.mutation.UpdatedAt(); ok {
+		_spec.SetField(paste.FieldUpdatedAt, field.TypeInt64, value)
+	}
+	if value, ok := puo.mutation.AddedUpdatedAt(); ok {
+		_spec.AddField(paste.FieldUpdatedAt, field.TypeInt64, value)
 	}
 	if value, ok := puo.mutation.Content(); ok {
 		_spec.SetField(paste.FieldContent, field.TypeString, value)

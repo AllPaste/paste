@@ -1,11 +1,12 @@
 package log
 
 import (
-	"go.uber.org/zap"
-	"go.uber.org/zap/zapcore"
 	"io"
 	"os"
 	"time"
+
+	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 )
 
 type Level = zapcore.Level
@@ -91,7 +92,7 @@ func New(writer io.Writer, level Level) *Logger {
 		}, // 自定义时间格式
 		EncodeLevel: func(level zapcore.Level, enc zapcore.PrimitiveArrayEncoder) {
 			zapcore.CapitalColorLevelEncoder(level, enc)
-			//enc.AppendString("[" + level.CapitalString() + "]")
+			// enc.AppendString("[" + level.CapitalString() + "]")
 		}, // 小写编码器
 		EncodeCaller: func(caller zapcore.EntryCaller, enc zapcore.PrimitiveArrayEncoder) {
 			enc.AppendString("[" + caller.TrimmedPath() + "]")

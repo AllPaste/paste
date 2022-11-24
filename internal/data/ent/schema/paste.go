@@ -2,12 +2,28 @@ package schema
 
 import (
 	"entgo.io/ent"
+	"entgo.io/ent/dialect/entsql"
+	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/field"
 )
 
 // Paste holds the schema definition for the User entity.
 type Paste struct {
 	ent.Schema
+}
+
+func (Paste) Annotations() []schema.Annotation {
+	return []schema.Annotation{
+		entsql.Annotation{
+			Table: "ansible",
+		},
+	}
+}
+
+func (Paste) Mixin() []ent.Mixin {
+	return []ent.Mixin{
+		MetaObject{},
+	}
 }
 
 // Fields of the User.

@@ -31,7 +31,11 @@ type PasteMutation struct {
 	config
 	op            Op
 	typ           string
-	id            *int
+	id            *int64
+	created_at    *int64
+	addcreated_at *int64
+	updated_at    *int64
+	addupdated_at *int64
 	content       *string
 	creator       *string
 	clearedFields map[string]struct{}
@@ -60,7 +64,7 @@ func newPasteMutation(c config, op Op, opts ...pasteOption) *PasteMutation {
 }
 
 // withPasteID sets the ID field of the mutation.
-func withPasteID(id int) pasteOption {
+func withPasteID(id int64) pasteOption {
 	return func(m *PasteMutation) {
 		var (
 			err   error
@@ -110,9 +114,15 @@ func (m PasteMutation) Tx() (*Tx, error) {
 	return tx, nil
 }
 
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of Paste entities.
+func (m *PasteMutation) SetID(id int64) {
+	m.id = &id
+}
+
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *PasteMutation) ID() (id int, exists bool) {
+func (m *PasteMutation) ID() (id int64, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -123,12 +133,12 @@ func (m *PasteMutation) ID() (id int, exists bool) {
 // That means, if the mutation is applied within a transaction with an isolation level such
 // as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
 // or updated by the mutation.
-func (m *PasteMutation) IDs(ctx context.Context) ([]int, error) {
+func (m *PasteMutation) IDs(ctx context.Context) ([]int64, error) {
 	switch {
 	case m.op.Is(OpUpdateOne | OpDeleteOne):
 		id, exists := m.ID()
 		if exists {
-			return []int{id}, nil
+			return []int64{id}, nil
 		}
 		fallthrough
 	case m.op.Is(OpUpdate | OpDelete):
@@ -136,6 +146,118 @@ func (m *PasteMutation) IDs(ctx context.Context) ([]int, error) {
 	default:
 		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
 	}
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *PasteMutation) SetCreatedAt(i int64) {
+	m.created_at = &i
+	m.addcreated_at = nil
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *PasteMutation) CreatedAt() (r int64, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the Paste entity.
+// If the Paste object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PasteMutation) OldCreatedAt(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// AddCreatedAt adds i to the "created_at" field.
+func (m *PasteMutation) AddCreatedAt(i int64) {
+	if m.addcreated_at != nil {
+		*m.addcreated_at += i
+	} else {
+		m.addcreated_at = &i
+	}
+}
+
+// AddedCreatedAt returns the value that was added to the "created_at" field in this mutation.
+func (m *PasteMutation) AddedCreatedAt() (r int64, exists bool) {
+	v := m.addcreated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *PasteMutation) ResetCreatedAt() {
+	m.created_at = nil
+	m.addcreated_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *PasteMutation) SetUpdatedAt(i int64) {
+	m.updated_at = &i
+	m.addupdated_at = nil
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *PasteMutation) UpdatedAt() (r int64, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the Paste entity.
+// If the Paste object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PasteMutation) OldUpdatedAt(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// AddUpdatedAt adds i to the "updated_at" field.
+func (m *PasteMutation) AddUpdatedAt(i int64) {
+	if m.addupdated_at != nil {
+		*m.addupdated_at += i
+	} else {
+		m.addupdated_at = &i
+	}
+}
+
+// AddedUpdatedAt returns the value that was added to the "updated_at" field in this mutation.
+func (m *PasteMutation) AddedUpdatedAt() (r int64, exists bool) {
+	v := m.addupdated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *PasteMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+	m.addupdated_at = nil
 }
 
 // SetContent sets the "content" field.
@@ -229,7 +351,13 @@ func (m *PasteMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *PasteMutation) Fields() []string {
-	fields := make([]string, 0, 2)
+	fields := make([]string, 0, 4)
+	if m.created_at != nil {
+		fields = append(fields, paste.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, paste.FieldUpdatedAt)
+	}
 	if m.content != nil {
 		fields = append(fields, paste.FieldContent)
 	}
@@ -244,6 +372,10 @@ func (m *PasteMutation) Fields() []string {
 // schema.
 func (m *PasteMutation) Field(name string) (ent.Value, bool) {
 	switch name {
+	case paste.FieldCreatedAt:
+		return m.CreatedAt()
+	case paste.FieldUpdatedAt:
+		return m.UpdatedAt()
 	case paste.FieldContent:
 		return m.Content()
 	case paste.FieldCreator:
@@ -257,6 +389,10 @@ func (m *PasteMutation) Field(name string) (ent.Value, bool) {
 // database failed.
 func (m *PasteMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
 	switch name {
+	case paste.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case paste.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
 	case paste.FieldContent:
 		return m.OldContent(ctx)
 	case paste.FieldCreator:
@@ -270,6 +406,20 @@ func (m *PasteMutation) OldField(ctx context.Context, name string) (ent.Value, e
 // type.
 func (m *PasteMutation) SetField(name string, value ent.Value) error {
 	switch name {
+	case paste.FieldCreatedAt:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case paste.FieldUpdatedAt:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
 	case paste.FieldContent:
 		v, ok := value.(string)
 		if !ok {
@@ -291,13 +441,26 @@ func (m *PasteMutation) SetField(name string, value ent.Value) error {
 // AddedFields returns all numeric fields that were incremented/decremented during
 // this mutation.
 func (m *PasteMutation) AddedFields() []string {
-	return nil
+	var fields []string
+	if m.addcreated_at != nil {
+		fields = append(fields, paste.FieldCreatedAt)
+	}
+	if m.addupdated_at != nil {
+		fields = append(fields, paste.FieldUpdatedAt)
+	}
+	return fields
 }
 
 // AddedField returns the numeric value that was incremented/decremented on a field
 // with the given name. The second boolean return value indicates that this field
 // was not set, or was not defined in the schema.
 func (m *PasteMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case paste.FieldCreatedAt:
+		return m.AddedCreatedAt()
+	case paste.FieldUpdatedAt:
+		return m.AddedUpdatedAt()
+	}
 	return nil, false
 }
 
@@ -306,6 +469,20 @@ func (m *PasteMutation) AddedField(name string) (ent.Value, bool) {
 // type.
 func (m *PasteMutation) AddField(name string, value ent.Value) error {
 	switch name {
+	case paste.FieldCreatedAt:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddCreatedAt(v)
+		return nil
+	case paste.FieldUpdatedAt:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddUpdatedAt(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Paste numeric field %s", name)
 }
@@ -333,6 +510,12 @@ func (m *PasteMutation) ClearField(name string) error {
 // It returns an error if the field is not defined in the schema.
 func (m *PasteMutation) ResetField(name string) error {
 	switch name {
+	case paste.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case paste.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
 	case paste.FieldContent:
 		m.ResetContent()
 		return nil

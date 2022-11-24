@@ -163,7 +163,7 @@ func (c *PasteClient) UpdateOne(pa *Paste) *PasteUpdateOne {
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *PasteClient) UpdateOneID(id int) *PasteUpdateOne {
+func (c *PasteClient) UpdateOneID(id int64) *PasteUpdateOne {
 	mutation := newPasteMutation(c.config, OpUpdateOne, withPasteID(id))
 	return &PasteUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
@@ -180,7 +180,7 @@ func (c *PasteClient) DeleteOne(pa *Paste) *PasteDeleteOne {
 }
 
 // DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *PasteClient) DeleteOneID(id int) *PasteDeleteOne {
+func (c *PasteClient) DeleteOneID(id int64) *PasteDeleteOne {
 	builder := c.Delete().Where(paste.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
@@ -195,12 +195,12 @@ func (c *PasteClient) Query() *PasteQuery {
 }
 
 // Get returns a Paste entity by its id.
-func (c *PasteClient) Get(ctx context.Context, id int) (*Paste, error) {
+func (c *PasteClient) Get(ctx context.Context, id int64) (*Paste, error) {
 	return c.Query().Where(paste.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *PasteClient) GetX(ctx context.Context, id int) *Paste {
+func (c *PasteClient) GetX(ctx context.Context, id int64) *Paste {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)

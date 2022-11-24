@@ -1,9 +1,10 @@
 package driver
 
 import (
+	"log"
+
 	"github.com/AllPaste/paste/config"
 	"github.com/AllPaste/paste/internal/data/ent"
-	"log"
 )
 
 func NewDriver(c config.Config) (*ent.Client, func(), error) {
@@ -17,5 +18,4 @@ func NewDriver(c config.Config) (*ent.Client, func(), error) {
 			log.Fatal(err)
 		}
 	}, nil
-
 }
