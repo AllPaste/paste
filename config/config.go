@@ -9,8 +9,9 @@ import (
 var c Config
 
 type Config struct {
-	DB  *DB  `mapstructure:"DB"`
-	Log *Log `mapstructure:"Log"`
+	DB     *DB     `mapstructure:"DB"`
+	Log    *Log    `mapstructure:"Log"`
+	Server *Server `mapstructure:"Server"`
 }
 
 type Log struct {
@@ -20,6 +21,10 @@ type Log struct {
 type DB struct {
 	Driver string `mapstructure:"Driver"`
 	DSN    string `mapstructure:"DSN"`
+}
+
+type Server struct {
+	Listen string `mapstructure:"Listen"`
 }
 
 func NewConfig(path string) *Config {

@@ -9,13 +9,12 @@ import (
 	"github.com/AllPaste/paste/pkg/log"
 )
 
-var (
-	stringFlag string
-)
+var stringFlag string
 
 func init() {
 	flag.StringVar(&stringFlag, "f", "./config/config.yaml", "config path")
 }
+
 func main() {
 	flag.Parse()
 
@@ -25,6 +24,11 @@ func main() {
 	logger := log.New(os.Stderr, log.InfoLevel)
 	defer log.Sync()
 
-	logger.Infof("config: %#v", c)
-	logger.Error("ERROR")
+	app, cleanup, err := server(c, logger)
+	if err != nil {
+		panic(err)
+	}
+	defer cleanup()
+
+	app.Run()
 }

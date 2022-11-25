@@ -1,3 +1,5 @@
+Server:
+  Listen: 9000
 DB:
   Driver: sqlite3
   DSN: "sqlite.db?_fk=1"

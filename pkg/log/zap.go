@@ -24,47 +24,47 @@ const (
 )
 
 func (l *Logger) Debug(args ...any) {
-	l.l.Sugar().Debug(args...)
+	l.loger.Sugar().Debug(args...)
 }
 
 func (l *Logger) Info(args ...any) {
-	l.l.Sugar().Info(args...)
+	l.loger.Sugar().Info(args...)
 }
 
 func (l *Logger) Warn(args ...any) {
-	l.l.Sugar().Warn(args...)
+	l.loger.Sugar().Warn(args...)
 }
 
 func (l *Logger) Error(args ...any) {
-	l.l.Sugar().Error(args...)
+	l.loger.Sugar().Error(args...)
 }
 
 func (l *Logger) Fatal(args ...any) {
-	l.l.Sugar().Fatal(args...)
+	l.loger.Sugar().Fatal(args...)
 }
 
 func (l *Logger) Debugf(template string, args ...any) {
-	l.l.Sugar().Debugf(template, args...)
+	l.loger.Sugar().Debugf(template, args...)
 }
 
 func (l *Logger) Infof(template string, args ...any) {
-	l.l.Sugar().Infof(template, args...)
+	l.loger.Sugar().Infof(template, args...)
 }
 
 func (l *Logger) Warnf(template string, args ...any) {
-	l.l.Sugar().Warnf(template, args...)
+	l.loger.Sugar().Warnf(template, args...)
 }
 
 func (l *Logger) Errorf(template string, args ...any) {
-	l.l.Sugar().Errorf(template, args...)
+	l.loger.Sugar().Errorf(template, args...)
 }
 
 func (l *Logger) Fatalf(template string, args ...any) {
-	l.l.Sugar().Fatalf(template, args...)
+	l.loger.Sugar().Fatalf(template, args...)
 }
 
 type Logger struct {
-	l     *zap.Logger // zap ensure that zap.Logger is safe for concurrent use
+	loger *zap.Logger // zap ensure that zap.Logger is safe for concurrent use
 	level Level
 }
 
@@ -108,7 +108,7 @@ func New(writer io.Writer, level Level) *Logger {
 	)
 
 	logger := &Logger{
-		l:     zap.New(core, zap.AddCaller(), zap.AddCallerSkip(1)),
+		loger: zap.New(core, zap.AddCaller(), zap.AddCallerSkip(1)),
 		level: level,
 	}
 
@@ -116,7 +116,7 @@ func New(writer io.Writer, level Level) *Logger {
 }
 
 func (l *Logger) Sync() error {
-	return l.l.Sync()
+	return l.loger.Sync()
 }
 
 func Sync() error {
@@ -124,4 +124,9 @@ func Sync() error {
 		return std.Sync()
 	}
 	return nil
+}
+
+// ZapLogger return zap.Logger object.
+func (l *Logger) ZapLogger() *zap.Logger {
+	return l.loger
 }
