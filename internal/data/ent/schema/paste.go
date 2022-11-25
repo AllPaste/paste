@@ -15,7 +15,7 @@ type Paste struct {
 func (Paste) Annotations() []schema.Annotation {
 	return []schema.Annotation{
 		entsql.Annotation{
-			Table: "ansible",
+			Table: "paste",
 		},
 	}
 }

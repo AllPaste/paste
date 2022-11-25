@@ -2,7 +2,7 @@ package entity
 
 import (
 	"github.com/AllPaste/paste/internal/data/ent"
-	pb "github.com/AllPaste/sdk/core/v1"
+	cpb "github.com/AllPaste/sdk/core/v1"
 )
 
 type Paste struct {
@@ -26,12 +26,12 @@ func NewPasteWithPO(po *ent.Paste) *Paste {
 	}
 }
 
-func (p *Paste) ToPB() *pb.Paste {
+func (p *Paste) ToPB() *cpb.Paste {
 	if p == nil {
 		return nil
 	}
 
-	return &pb.Paste{
+	return &cpb.Paste{
 		Id:        p.ID,
 		CreatedAt: p.CreatedAt,
 		UpdatedAt: p.UpdatedAt,

@@ -1,5 +1,5 @@
 DB:
-  Diver: sqlite
-  DSN: "sqlite.db"
+  Driver: sqlite3
+  DSN: "sqlite.db?_fk=1"
 Log:
   Level: "info"
