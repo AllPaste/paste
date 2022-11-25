@@ -5,6 +5,7 @@ import (
 	cpb "github.com/AllPaste/sdk/core/v1"
 )
 
+// Paste is BO（Business Object）业务对象
 type Paste struct {
 	ID        int64  `json:"id,omitempty"`
 	CreatedAt int64  `json:"createdAt,omitempty"`
