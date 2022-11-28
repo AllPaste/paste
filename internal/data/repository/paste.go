@@ -2,13 +2,12 @@ package repository
 
 import (
 	"context"
-	"log"
-
-	"github.com/AllPaste/paste/internal/data/ent/paste"
 
 	"github.com/AllPaste/paste/internal/data/ent"
+	"github.com/AllPaste/paste/internal/data/ent/paste"
 	"github.com/AllPaste/paste/internal/domain"
 	"github.com/AllPaste/paste/internal/entity"
+	"github.com/AllPaste/paste/pkg/log"
 )
 
 type PasteRepo struct {

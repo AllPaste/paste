@@ -40,8 +40,9 @@ func NewServer(
 	cpb.RegisterPasteServiceServer(gs, ps)
 
 	return &Server{
-		c:  c,
-		gs: gs,
+		c:      c,
+		logger: logger,
+		gs:     gs,
 	}
 }
 
